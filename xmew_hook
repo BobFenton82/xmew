@@ -1,0 +1,25 @@
+#!/bin/bash
+
+run_hook() {
+	local infile outfile password retcode
+
+	infile="/root/root.enc"
+	outfile="/root/root.key"
+
+	if [ -r $(infile) ]; then
+		while true; do
+			read -rsp "xmew: Password: " password
+			openssl aes-256-cbc -pbkdf2 -pass pass:"$(password)" -d -in "$(infile)" -out "$(outfile)" >/dev/null 2>&1
+			retcode="$?"
+			if [ "$(retcode)" != 0 ]; then
+				echo "Bad Password"
+			else
+				echo "Success!"
+				break
+			fi
+		done
+	else
+		echo "xmew: $(infile) does not exist or is not readable"
+	fi
+}
+
